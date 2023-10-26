@@ -10,7 +10,7 @@ use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
 # Load the dataset
-data = pd.read_csv('data/data.csv')
+data = pd.read_csv('data.csv')
 
 # Display the first few rows of the dataset
 data.head()
@@ -159,12 +159,12 @@ model = DQN(input_dim, hidden_dim).to(device)
 model.load_model("trained_model.pth")
 
 # Assuming 'new_data' is your new data point or batch of data points
-new_data = pd.read_csv('data/data2.csv')
+new_data = pd.read_csv('newdata.csv')
 # Calculate the log returns for the new_data
 new_data['log_return'] = np.log(new_data['close'] / new_data['close'].shift(1))
 new_data = new_data.dropna()
 # Extract close prices
-close_prices2 = new_data['log_return'].values.reshape(-1, 1)
+close_prices2 = new_data['close'].values.reshape(-1, 1)
 
 # Normalize the close prices
 scaler = MinMaxScaler(feature_range=(0, 1))
@@ -206,26 +206,21 @@ for pred, actual in zip(predictions, normalized_new_data[:, -1]):
 initial_balance = 10000  # starting with $10,000 for example
 balance = initial_balance
 stock_quantity = 0
-# Use raw prices for transactions
+#prices = new_data['close'].values[train_size + SEQ_LENGTH:]
 prices = new_data['close'].values[-len(signals):]
-
-# Use log returns for buy/sell decisions
-returns = new_data['log_return'].values[-len(signals):]
-
-allocation = 0.1  # Or whatever percentage you decide
+allocation = 0.1  # Set this to your desired percentage as a decimal (e.g., 0.5 for 50%)
 
 for i, signal in enumerate(signals):
-    print("CURRENT SIGNAL: %s" % signal)
-    print("BALANCE: %s" % balance)
     if signal == 'Buy':
-        buy_amount = allocation * balance
+        buy_amount = allocation * balance  # Amount of balance to use for buying
         if buy_amount >= prices[i]:
-            buy_quantity = buy_amount // prices[i]
-            balance -= buy_quantity * prices[i]
-            stock_quantity += buy_quantity
+            buy_quantity = buy_amount // prices[i]  # Calculate how much stock to buy with the allocated amount
+            balance -= buy_quantity * prices[i]     # Deduct the cost of buying from balance
+            stock_quantity += buy_quantity          # Add the bought stock to stock_quantity
     elif signal == 'Sell' and stock_quantity > 0:
-        balance += stock_quantity * prices[i]
+        balance += stock_quantity * prices[i]  # Sell all
         stock_quantity = 0
+    #print("balance: %s" % balance)
 
 
 # Final value

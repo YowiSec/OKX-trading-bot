@@ -9,6 +9,17 @@ import plotly.graph_objects as go
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
+def omega_ratio(returns, MAR=0):
+    upside = returns[returns > MAR].sum()
+    downside = -returns[returns < MAR].sum()
+
+    if downside == 0:
+        return np.inf  # Infinite omega ratio if there's no downside
+    return upside / downside
+
+# Assuming `portfolio_returns` is an array of returns given the trading signals
+#print("Omega Ratio:", omega_ratio(portfolio_returns))
+
 # Load the dataset
 data = pd.read_csv('data/data.csv')
 
@@ -187,7 +198,7 @@ with torch.no_grad():
     h_new, c_new = model.init_hidden(new_sequences_tensor.size(0))
     predictions = model(new_sequences_tensor, (h_new, c_new))
 
-threshold = 0.01  # for example, 1% price difference to trigger a trade
+threshold = 0.05  # for example, 1% price difference to trigger a trade
 
 # Generating trading signals
 signals = []
