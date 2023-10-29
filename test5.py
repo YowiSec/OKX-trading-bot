@@ -170,7 +170,7 @@ model = DQN(input_dim, hidden_dim).to(device)
 model.load_model("trained_model.pth")
 
 # Assuming 'new_data' is your new data point or batch of data points
-new_data = pd.read_csv('data/data2.csv')
+new_data = pd.read_csv('data/newdata.csv')
 # Calculate the log returns for the new_data
 new_data['log_return'] = np.log(new_data['close'] / new_data['close'].shift(1))
 new_data = new_data.dropna()

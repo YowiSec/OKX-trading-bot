@@ -18,9 +18,9 @@ data.head()
 # Extract close prices
 close_prices = data['close'].values.reshape(-1, 1)
 # Calculate the log returns for the original data
-data['log_return'] = np.log(data['close'] / data['close'].shift(1))
+# data['log_return'] = np.log(data['close'] / data['close'].shift(1))
 # Drop the NaN value created by the log return calculation
-data = data.dropna()
+# data = data.dropna()
 # Normalize the close prices
 scaler = MinMaxScaler(feature_range=(0, 1))
 normalized_data = scaler.fit_transform(close_prices)
@@ -159,12 +159,13 @@ model = DQN(input_dim, hidden_dim).to(device)
 model.load_model("trained_model.pth")
 
 # Assuming 'new_data' is your new data point or batch of data points
-new_data = pd.read_csv('data/data2.csv')
+new_data = pd.read_csv('data/newdata.csv')
 # Calculate the log returns for the new_data
-new_data['log_return'] = np.log(new_data['close'] / new_data['close'].shift(1))
-new_data = new_data.dropna()
+# new_data['log_return'] = np.log(new_data['close'] / new_data['close'].shift(1))
+# new_data = new_data.dropna()
 # Extract close prices
-close_prices2 = new_data['log_return'].values.reshape(-1, 1)
+# close_prices2 = new_data['log_return'].values.reshape(-1, 1)
+close_prices2 = new_data['close'].values.reshape(-1, 1)
 
 # Normalize the close prices
 scaler = MinMaxScaler(feature_range=(0, 1))
@@ -210,7 +211,7 @@ stock_quantity = 0
 prices = new_data['close'].values[-len(signals):]
 
 # Use log returns for buy/sell decisions
-returns = new_data['log_return'].values[-len(signals):]
+# returns = new_data['log_return'].values[-len(signals):]
 
 allocation = 0.1  # Or whatever percentage you decide
 
