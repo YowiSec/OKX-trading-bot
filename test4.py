@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import plotly.graph_objects as go
-
+import time
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
@@ -71,7 +71,7 @@ class DQN(nn.Module):
 
 # Define the model
 input_dim = 1  # since we are only using 'close' prices
-hidden_dim = 50
+hidden_dim = 5
 
 model = DQN(input_dim, hidden_dim).to(device)
 
@@ -149,14 +149,14 @@ fig.update_layout(title='Training & Testing Loss over Epochs',
 #fig.show()
 
 # Specify the path where you want to save the model weights
-save_path = "trained_model.pth"
-
+save_path = "models/test4_model_"+str(time.time())+".pth"
+print(save_path)
 # Save the model weights
 model.save_model(save_path)
 
 
 model = DQN(input_dim, hidden_dim).to(device)
-model.load_model("trained_model.pth")
+model.load_model(save_path)
 
 # Assuming 'new_data' is your new data point or batch of data points
 new_data = pd.read_csv('data/newdata.csv')
